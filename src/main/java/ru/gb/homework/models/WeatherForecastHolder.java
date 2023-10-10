@@ -1,35 +1,33 @@
 package ru.gb.homework.models;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.gb.homework.repositories.WeatherRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class WeatherForecastHolder {
 
-    private final List<WeatherForecast> values = new ArrayList<>();
-    private int id = 0;
+    private final WeatherRepository weatherRepository;
 
     public List<WeatherForecast> getValues() {
-        return this.values;
+        return weatherRepository.getValues();
     }
 
     public void addNewValue(WeatherForecast weatherForecast) {
-        weatherForecast.setId(++id);
-        this.values.add(weatherForecast);
+        log.info("Saving new {}", weatherForecast);
+        weatherRepository.save(weatherForecast);
     }
 
     public void removeValue(Integer id) {
-        this.values.removeIf(value -> value.getId().equals(id));
+        weatherRepository.deleteById(id);
     }
 
     public WeatherForecast getValueFromId(Integer id) {
-        for (WeatherForecast value : this.values) {
-            if (value.getId().equals(id)) {
-                return value;
-            }
-        }
-        return null;
+        return weatherRepository.findById(id).orElse(null);
     }
 }
